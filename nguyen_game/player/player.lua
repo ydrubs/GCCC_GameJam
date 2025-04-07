@@ -19,17 +19,14 @@ function Player:init(x, y)
     self.y = y
 end
 
-function Player:update()
-    -- Update player position based on input
-    if btn(0) then self.x = self.x - self.speed end -- Left
-    if btn(1) then self.x = self.x + self.speed end -- Right
-
+function Player:move(dir)
+    self.x = self.x + dir * self.speed
     self:check_out_of_bounds() -- Check if out of bounds
 end
 
+
 function Player:draw()
-    -- Draw the player sprite at the current position
-    spr(1, self.x, self.y) -- Assuming sprite 1 is the player sprite
+    spr(1, self.x, self.y) 
 end
 
 function Player:check_out_of_bounds()
@@ -41,5 +38,4 @@ function Player:check_out_of_bounds()
     if self.x > 127 - 33 - 8 then 
         self.x = 127 - 33 - 8
     end
-
 end
