@@ -1,5 +1,4 @@
 Projectile = {
-    id = 0,
     -- The projectile's position
     x = 64,
     y = 64,
@@ -31,10 +30,6 @@ end
 
 function Projectile:draw()
     spr(self.image, self.x, self.y)
-end
-
-function Projectile:set_id(id)
-    self.id = id
 end
 
 function Projectile:set_position(x, y)

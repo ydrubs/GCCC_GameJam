@@ -3,7 +3,8 @@ Game_Manager = {
 
     projectiles = {},
     projectiles_pool = {},
-    id = 1,
+
+    enemy_controller = nil,
 }
 
 function Game_Manager:new(o)
@@ -18,40 +19,47 @@ function Game_Manager:init()
     self.player = Player:new{x = 47-8, y = 100}
     self.projectiles = {}
     self.projectiles_pool = {}
+
+    -- Try to take each controller and put them in the game manager
+    -- Try projectile_controller later 
+    self.enemy_controller = Enemy_Controller:new()
+    self.enemy_controller:init()
 end
 
 function Game_Manager:update()
-    -- Get input from the player
+    self.enemy_controller:update()
+
+    -- Get input from the player    
     if btn(0) then self.player:move(-1) end -- Left
     if btn(1) then self.player:move(1) end -- Right
 
-    while #self.projectiles > 0 and self.projectiles[1].disable == true do
-        local projectile = dequeue(self.projectiles)
-        enqueue(self.projectiles_pool, projectile)
-        Log("Pool projectile: " .. projectile.id)
-    end
+    -- Add projectile to the pool if it is disabled
+    self:add_projectile_to_pool(self.projectiles, self.projectiles_pool)
 
+    -- Check if the player is pressing the shoot button (X)
     if btnp(5) then
+        -- Check if the player has any projectiles in the pool
+        -- If not, create a new projectile
         if #self.projectiles_pool == 0 then
             local projectile = Projectile:new{x = self.player.x, y = self.player.y}
-            projectile:set_id(self.id) -- Set the id of the projectile
             enqueue(self.projectiles, projectile)
-            self.id += 1
+
+        -- If there are projectile in the pool, reuse this from taking from pool
         else
             local projectile = dequeue(self.projectiles_pool)
             projectile:set_position(self.player.x, self.player.y) 
             self.projectiles[#self.projectiles + 1] = projectile
             projectile:set_active() -- Set the projectile to active
         end
-
-        Log("Create projectile: " .. self.projectiles[#self.projectiles].id)
     end
 
+    --Update the projectile
     for i = 1, #self.projectiles do
         self.projectiles[i]:update()
+
+        -- Check if the projectile is going out the screen
         if self.projectiles[i]:check_out_of_bounds() then
             self.projectiles[i]:set_disable()
-            Log("Mark disable: " .. self.projectiles[i].id)
         end
     end
 
@@ -59,6 +67,7 @@ function Game_Manager:update()
 end
 
 function Game_Manager:draw()
+    self.enemy_controller:draw()
     self.player:draw()
 
     for i = 1, #self.projectiles do
@@ -67,10 +76,12 @@ function Game_Manager:draw()
 
     print("lst: " .. #self.projectiles, 97, 110)
     print("pool: " .. #self.projectiles_pool, 97, 120)
+    print("enemy: " .. #self.enemy_controller.enemies, 97, 100)
 end
 
-function Game_Manager:remove_item_from_pool()
-    local item = self.projectiles_pool[#self.projectiles_pool]
-    self.projectiles_pool[#self.projectiles_pool] = nil -- Remove the last item from the pool
-    return item
+function Game_Manager:add_projectile_to_pool(lst, pool)
+    while #lst > 0 and lst[1].disable == true do
+        local projectile = dequeue(lst)
+        enqueue(pool, projectile)
+    end
 end

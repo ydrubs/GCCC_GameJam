@@ -19,6 +19,10 @@ function Player:init(x, y)
     self.y = y
 end
 
+function Player:on_collision()
+
+end
+
 function Player:move(dir)
     self.x = self.x + dir * self.speed
     self:check_out_of_bounds() -- Check if out of bounds
