@@ -5,6 +5,7 @@ pal(0,129,1)
 
 function _init()
 	round=1
+	can_move=true
 	enemies={}
 	
 	for i=1,2 do
@@ -18,34 +19,43 @@ end
 function _update()
 
 	--[[
-	
-		pretty empty at the moment,
-		it currnently just checks for
-		movement and also handles
-		enemy movement for when the 
-		player does move
-	
-	]]
-	player:movement()
-	if player.moved == true then
-		for enemy in all(enemies) do
-			enemy:movement()
+		currnetly just checks if for
+		movement and if the menu is
+		open or not.]]
+		
+	if can_move then
+		player:movement()
+		if player.moved == true then
+			for enemy in all(enemies) do
+				enemy:movement()
+			end
+			player.moved = false
 		end
-		player.moved = false
+	elseif not can_move then
+		if btnp(🅾️) then
+			menu:open()
+		end
 	end
 end
 
 function _draw()
 	cls()
 	map()
+	
 	player:draw()
 	player_camera:update()
 	
 	for enemy in all(enemies) do
 		enemy:draw()
-		--print(-cos(enemy:angle(player.x,player.y)))
-		--print(sin(enemy:angle(player.x,player.y)))
 	end
+	
+	--checks if the menu is open
+	if menu.opened == true then
+	 rect(1,84,126,126,7)
+		rectfill(2,85,125,125,1)
+		print("this is a test menu...\nhello world!!!!",3,86,7)
+	end
+
 end
 -->8
 --player
@@ -85,6 +95,10 @@ player={
 				self.x+=1
 				self.moved=true
 			end
+		end
+		
+		if btnp(🅾️) then
+			menu:open()
 		end
 	end,
 	
@@ -133,6 +147,21 @@ player_camera={
 	end
 }
 
+menu={
+	opened = false,
+	
+	open = function(self)
+		if self.opened then
+		 self.opened = false
+		 can_move = true
+		else
+			self.opened = true
+			can_move = false
+		end
+	end
+
+}
+
 -->8
 --enemy
 enemy={
@@ -141,8 +170,7 @@ enemy={
 	
 	new=function(self,tbl)
 		--[[
-		
-			this is the first time im
+	 	this is the first time im
 			using lua's metatables in a
 			project. still a pretty weird
 		 concept to grasp coming over
@@ -153,9 +181,7 @@ enemy={
 		 method for the "class" of 
 		 enemy. this allows me to 
 		 create child nodes and give
-		 them unique variables.
-		 
-		]]
+		 them unique variables.]]
 	
 		tbl=tbl or {}
 		setmetatable(tbl,{
@@ -176,20 +202,19 @@ enemy={
 		local cosp = -cos(self:angle(player.x,player.y))
 		local sinp = sin(self:angle(player.x,player.y))
 		--[[
-		
 			in an effort to simplify how
 			enemies move, i used basic 
 			trig to essentially shoot out
 			a 45 deg. angle from all
 			sides and have it move to
 			the player.
-			
-			issues
-				-currently collision with
-					itself does not work,
-					i will fix this soon.			
+
+			tye and i discovered that 
+			the movement function acts
+			pretty odd when using the
+			round variable that was
+			created in the init function.]]
 		
-		]]
 		if round == 3 then
 			round = 1
 			
@@ -263,7 +288,7 @@ __map__
 0202030303030302020203030303020202020303030303030303030303030302000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0202020202020202020202020202020202020202020202020202020202020202000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __sfx__
-000800200b6500b6500c6500d6500f65012650176501b6501e6501f6501f6501e6501e6501d6501b6501b6501a650196501765016650186501a6501a650146501365011650106500f6500d6500b6500865005650
+000300200a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a0500a050
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -327,3 +352,6 @@ __sfx__
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 002000001885000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+__music__
+00 01424344
+
