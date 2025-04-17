@@ -2,6 +2,7 @@ Enemy = {
     x = 0,
     y = 0,
     speed = 2,
+    ready_time = 2,
 }
 
 function Enemy:new(o)
@@ -42,4 +43,8 @@ function Enemy:check_out_of_bounds()
     if self.y > 127 - 33 - 8 then 
         self.y = 127 - 33 - 8
     end
+end
+
+function Enemy:get_ready()
+    self.ready_time -= 1
 end

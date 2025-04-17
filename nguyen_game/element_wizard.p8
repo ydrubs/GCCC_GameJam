@@ -16,6 +16,7 @@ __lua__
 #include player/player.lua
 
 -- projectile
+#include projectile/projectile_controller.lua
 #include projectile/projectile.lua
 -- enemy
 #include enemy/enemy.lua
